@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from itertools import product
+from itertools import product, chain, combinations
 import pdb
 from read_file import *
 from indicators import *
@@ -231,6 +231,11 @@ print("Time taken (PLS 2):", time_end - time_start, "seconds")
 # PLS 3 :
 ##################################################
 
+def powerset(iterable):
+    """Renvoie tous les sous-ensembles d'un iterable"""
+    s = list(iterable)
+    return chain.from_iterable(combinations(s, r) for r in range(len(s) + 1))
+
 # initial population based on performance ratio:
 print("PLS 3:")
 m=1000	
@@ -251,7 +256,27 @@ def voisins_faisables_L1l2(xStart, weights, values, capacity, q_val=0.5, L=4): #
 	W_base = int(np.sum(weights[F])) if F else 0
 	V_base = values[F].sum(axis=0) if F else np.zeros(2, dtype=int)
 	Wprime = capacity - W_base
+	
 	neighbors = []
+
+	# Génération de tous les sous-ensembles possibles
+   
+
+    # Pour chaque combinaison de retraits (R) et d’ajouts (A)
+	for R in powerset(L1):
+		weight_removed = np.sum(weights[list(R)]) if R else 0
+		for A in powerset(L2):
+			weight_added = np.sum(weights[list(A)]) if A else 0
+			total_weight = W_base - weight_removed + weight_added
+
+            # Vérifie faisabilité
+			if total_weight <= capacity and (R or A):  # au moins un changement
+                # Nouvelle solution
+				x_new = xStart.copy()
+				x_new[list(R)] = 0
+				x_new[list(A)] = 1
+				neighbors.append(x_new)
+	return neighbors
 
                 
                 
