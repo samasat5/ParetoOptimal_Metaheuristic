@@ -252,7 +252,38 @@ def voisins_faisables_L1l2(xStart, weights, values, capacity, q_val=0.5, L=4): #
 	V_base = values[F].sum(axis=0) if F else np.zeros(2, dtype=int)
 	Wprime = capacity - W_base
 	neighbors = []
+	# Map S indices to positions in bit vector
+	k = len(S)
+	for combo in product([0,1], repeat=k): # all combinations of L1 and L2
+	
+		# weight of chosen S-items (remember: for L1, 1=keep; for L2, 1=add)
+		wS = 0 
+		vS = np.array([0,0], dtype=int) # 
+		feasible = True
+		for b, idx in zip(combo, S): 
+		
+			if b:
+				wS += weights[idx]
+				vS += values[idx]
+			if wS > Wprime:
+				feasible = False
+				break
+		if not feasible:
+			continue
 
+		# Build x'
+		x2 = xStart.copy()
+		# Apply L1: keep=1/remove=0
+		for b, idx in zip(combo[:len(L1)], L1):
+			x2[idx] = b
+		# Apply L2: add=1/skip=0
+		for b, idx in zip(combo[len(L1):], L2):
+			x2[idx] = b
+
+		# Compute objectives
+		v2 = (V_base + vS).astype(int)
+		neighbors.append([x2, v2])
+	return neighbors
                 
                 
 time_start = time.time()             
