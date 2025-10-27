@@ -240,8 +240,8 @@ def voisins_faisables_L1l2(xStart, weights, values, capacity, q_val=0.5, L=4): #
 	order_idx_descending = np.argsort(-performance_scores)
 	in_idx = np.where(xStart == 1)[0]
 	out_idx = np.where(xStart == 0)[0]	
-	L1 = [i for i in in_idx if i in order_idx_descending[-(L):]]  # worst candidates to be removed
-	L2 = [j for j in out_idx if j in order_idx_descending[:L]]  # best candidates to be added
+	L1 = list(in_idx[:min(L, len(in_idx))])  # worst candidates (within 1) to be removed
+	L2 = list(out_idx[:min(L, len(out_idx))]) # best candidates (within 0) to be added
 
 	n = len(weights)
 	S = L1 + L2
@@ -255,7 +255,6 @@ def voisins_faisables_L1l2(xStart, weights, values, capacity, q_val=0.5, L=4): #
 	# Map S indices to positions in bit vector
 	k = len(S)
 	for combo in product([0,1], repeat=k): # all combinations of L1 and L2
-	
 		# weight of chosen S-items (remember: for L1, 1=keep; for L2, 1=add)
 		wS = 0 
 		vS = np.array([0,0], dtype=int) # 
@@ -290,7 +289,7 @@ time_start = time.time()
 XE = [ [x.copy(), v.copy()] for (x, v) in p0 ]
 P  = [ [x.copy(), v.copy()] for (x, v) in p0 ]
 q_val = 0.6
-L = 4
+L = 2
 while len(P) > 0:	
     pa = []
     for solution in P:
