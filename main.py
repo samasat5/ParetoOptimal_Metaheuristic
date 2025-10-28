@@ -5,7 +5,8 @@ import pdb
 from read_file import *
 from indicators import *
 import time
-
+import itertools
+from random import sample
 
 numInstance=0
 n=100
@@ -33,7 +34,7 @@ YND=[]  #YND est la liste des solutions non-dominées (approximation)
 # Naive Random Sampling :
 ##################################################
 #Génération de m solutions aléatoires : 
-m=1000	
+m=100
 
 YND=[]  
 random_feasible_solutions = []
@@ -83,25 +84,28 @@ print("DM =",DM(YN,YND,p))
 
 # # initial population based on performance ratio:
 # print("PLS 1:")
-# m=1000
+# m=100
 # p0 = []
 # YND=[] 
+
 # time_start = time.time() 	
-# for q_val in np.linspace(0.0, 1.0, m):
+# for i in range(m):
+# 	print(f"Generating initial solution {i}")
+# 	q_val=np.random.rand()
 # 	performance_scores = (q_val*values[:,0] + (1 - q_val)*values[:,1]) / weights # performance ratio R(i)
 # 	order = np.argsort(-performance_scores)  
-# 	x=np.zeros(n,dtype=int)
+# 	x_=np.zeros(n,dtype=int)
 # 	wTotal=0
-# 	v=np.zeros(p,dtype=int)
+# 	v_=np.zeros(p,dtype=int)
 # 	for i in range(n):
 # 		idx = order[i]
 # 		if wTotal + weights[idx] <= capacity:
-# 			x[idx] = 1
+# 			x_[idx] = 1
 # 			wTotal += weights[idx]
 # 			for j in range(p):
-# 				v[j] += values[idx,j]
-# 	p0.append([x, v])
-# 	dominates = miseAJour(YND,[xStart,v])
+# 				v_[j] += values[idx,j]
+# 	p0.append([x_, v_])
+# 	_ = miseAJour(YND, [x_, v_]) 
 
 # def voisins_1_1_faisables(xStart, vStart, w, v, capacity):
 #     n = len(w)
@@ -129,7 +133,7 @@ print("DM =",DM(YN,YND,p))
 #         x1, v1 = solution
 #         for solution_prime in voisins_1_1_faisables(x1, v1, weights, values, capacity):
 #             x2, v2 = solution_prime 
-#             if (v1[0] >= v2[0] and v1[1] >= v2[1]) and (v1[0] > v2[0] or v1[1] > v2[1]): 
+#             if not ((v1[0] >= v2[0] and v1[1] >= v2[1]) and (v1[0] > v2[0] or v1[1] > v2[1])): 
 #                 new_solution = [x2, v2]
 #                 dominates =  miseAJour(XE, [x2, v2])
 #                 if dominates:
@@ -145,7 +149,7 @@ print("DM =",DM(YN,YND,p))
 # for (xsol, vsol) in XE:
 #     plt.scatter(vsol[0], vsol[1], color='red', s=12)
 # plt.legend()
-# # plt.show()
+# plt.show()
 
 # print("Proportion =", proportion(YN, XE))
 # print("DM =", DM(YN, XE, p))
@@ -175,25 +179,26 @@ def voisins_1_1_faisables(xStart, vStart, w, v, capacity):
                 v2[1] = v2[1] - v[i,1] + v[j,1]
                 yield x2, v2
 # initial population based on performance ratio:
-m=1000
+m=100
 p0 = []
 XE=[]  	
 time_start = time.time()
-for q_val in np.linspace(0.0, 1.0, m):
+for i in range(m):
+	q_val=np.random.rand()
 	performance_scores = ((q_val*values[:,0] + (1 - q_val)*values[:,1]) / weights) # performance ratio R(i)
 	order_idx_descending = np.argsort(-performance_scores) # descending order
-	x=np.zeros(n,dtype=int)
+	x_=np.zeros(n,dtype=int)
 	wTotal=0
-	v=np.zeros(p,dtype=int)
+	v_=np.zeros(p,dtype=int)
 	for i in range(n):
 		idx = order_idx_descending[i]
 		if wTotal + weights[idx] <= capacity:
-			x[idx] = 1
+			x_[idx] = 1
 			wTotal += weights[idx]
 			for j in range(p):
-				v[j] += values[idx,j]
-	p0.append([x, v])
-	dominates = firstObj_miseAJour(XE,[xStart,v])
+				v_[j] += values[idx,j]
+	p0.append([x_, v_])
+	dominates = firstObj_miseAJour(XE,[x_,v_])
 
 P  = [ [x.copy(), v.copy()] for (x, v) in p0 ]
 pa = []	
@@ -202,7 +207,7 @@ while len(P) > 0:
         x1, v1 = solution
         for solution_prime in voisins_1_1_faisables(x1, v1, weights, values, capacity):
             x2, v2 = solution_prime 
-            if (v1[0] >= v2[0] and v1[1] >= v2[1]) and (v1[0] > v2[0] or v1[1] > v2[1]): 
+            if  not((v1[0] >= v2[0] and v1[1] >= v2[1]) and (v1[0] > v2[0] or v1[1] > v2[1])): 
                 new_solution = [x2, v2]
                 dominates =  firstObj_miseAJour(XE, [x2, v2])
                 if dominates:
@@ -218,7 +223,7 @@ plt.scatter(YN[:,0], YN[:,1], color='blue', s=10, label='True Pareto (YN)')
 for (xsol, vsol) in XE:
     plt.scatter(vsol[0], vsol[1], color='red', s=12)
 plt.legend()
-plt.show()
+# plt.show()
 
 print("Proportion =", proportion(YN, XE))
 print("DM =", DM(YN, XE, p))
@@ -233,7 +238,7 @@ print("Time taken (PLS 2):", time_end - time_start, "seconds")
 
 # initial population based on performance ratio:
 print("PLS 3:")
-m=1000	
+m=100
 # using the previous p0 from PLS 2
 def voisins_faisables_L1l2(xStart, weights, values, capacity, q_val=0.5, L=4): # worst and best L items 
 	performance_scores = (q_val*values[:,0] + (1 - q_val)*values[:,1]) / weights # performance ratio R(i)
@@ -254,7 +259,9 @@ def voisins_faisables_L1l2(xStart, weights, values, capacity, q_val=0.5, L=4): #
 	neighbors = []
 	# Map S indices to positions in bit vector
 	k = len(S)
-	for combo in product([0,1], repeat=k): # all combinations of L1 and L2
+	all_bits = list(itertools.product([0,1], repeat=k))
+	for combo in sample(all_bits, min(50, len(all_bits))):
+	# for combo in product([0,1], repeat=k): # all combinations of L1 and L2
 		# weight of chosen S-items (remember: for L1, 1=keep; for L2, 1=add)
 		wS = 0 
 		vS = np.array([0,0], dtype=int) # 
@@ -289,7 +296,7 @@ time_start = time.time()
 XE = [ [x.copy(), v.copy()] for (x, v) in p0 ]
 P  = [ [x.copy(), v.copy()] for (x, v) in p0 ]
 q_val = 0.6
-L = 2
+L = 10
 while len(P) > 0:	
     pa = []
     for solution in P:
@@ -311,7 +318,7 @@ plt.scatter(YN[:,0], YN[:,1], color='blue', s=10, label='True Pareto (YN)')
 for (xsol, vsol) in XE:
     plt.scatter(vsol[0], vsol[1], color='red', s=12)
 plt.legend()
-plt.show()
+# plt.show()
 
 print("Proportion =", proportion(YN, XE))
 print("DM =", DM(YN, XE, p))
