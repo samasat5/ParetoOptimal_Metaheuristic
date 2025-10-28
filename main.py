@@ -207,7 +207,7 @@ while len(P) > 0:
         x1, v1 = solution
         for solution_prime in voisins_1_1_faisables(x1, v1, weights, values, capacity):
             x2, v2 = solution_prime 
-            if  not((v1[0] >= v2[0] and v1[1] >= v2[1]) and (v1[0] > v2[0] or v1[1] > v2[1])): 
+            if  not((v1[0] >= v2[0] and v1[1] >= v2[1]) and (v1[0] > v2[0] or v1[1] > v2[1])): # if solution does not dominate solution_prime
                 new_solution = [x2, v2]
                 dominates =  firstObj_miseAJour(XE, [x2, v2])
                 if dominates:
@@ -259,10 +259,11 @@ def voisins_faisables_L1l2(xStart, weights, values, capacity, q_val=0.5, L=4): #
 	neighbors = []
 	# Map S indices to positions in bit vector
 	k = len(S)
-	all_bits = list(itertools.product([0,1], repeat=k))
-	for combo in sample(all_bits, min(50, len(all_bits))):
-	# for combo in product([0,1], repeat=k): # all combinations of L1 and L2
-		# weight of chosen S-items (remember: for L1, 1=keep; for L2, 1=add)
+	# all_bits = list(itertools.product([0,1], repeat=k))
+	# # for combo in sample(all_bits, min(20, len(all_bits))):
+	for combo in product([0,1], repeat= k):
+	# all combinations of L1 and L2
+		# weight of chosen S-items ( for L1, 1=keep; for L2, 1=add)
 		wS = 0 
 		vS = np.array([0,0], dtype=int) # 
 		feasible = True
@@ -295,15 +296,15 @@ def voisins_faisables_L1l2(xStart, weights, values, capacity, q_val=0.5, L=4): #
 time_start = time.time()             
 XE = [ [x.copy(), v.copy()] for (x, v) in p0 ]
 P  = [ [x.copy(), v.copy()] for (x, v) in p0 ]
-q_val = 0.6
-L = 10
+q_val = np.random.rand()
+L = 3
 while len(P) > 0:	
     pa = []
     for solution in P:
         x1, v1 = solution
         for solution_prime in voisins_faisables_L1l2(x1, weights, values, capacity, q_val, L)	:
             x2, v2 = solution_prime 
-            if (v1[0] >= v2[0] and v1[1] >= v2[1]) and (v1[0] > v2[0] or v1[1] > v2[1]): 
+            if not((v1[0] >= v2[0] and v1[1] >= v2[1]) and (v1[0] > v2[0] or v1[1] > v2[1])): 
                 dominates =  firstObj_miseAJour(XE, [x2, v2])
                 if dominates:
                     firstObj_miseAJour(pa, [x2, v2])
