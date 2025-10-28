@@ -12,7 +12,7 @@ n=100
 p=2
 
 for n in range(100, 800, 100):
-	for numInstance in range(5, 10):
+	for numInstance in range(0, 10):
 		w=np.zeros(n,dtype=int)
 		v=np.zeros((n,p),dtype=int)
 		filename = "Data/"+str(n)+"_items/2KP"+str(n)+"-TA-"+str(numInstance)+".dat"

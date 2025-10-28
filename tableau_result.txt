@@ -130,3 +130,32 @@ PLS 2:
 PLS 3 :
 Data/100_items/2KP100-TA-8
 PLS 2:
+Data/100_items/2KP100-TA-0
+PLS 2:
+PLS 3 :
+Data/100_items/2KP100-TA-1
+PLS 2:
+PLS 3 :
+Data/100_items/2KP100-TA-2
+PLS 2:
+PLS 3 :
+Data/100_items/2KP100-TA-3
+PLS 2:
+PLS 3 :
+Data/100_items/2KP100-TA-4
+PLS 2:
+PLS 3 :
+Data/100_items/2KP100-TA-5
+PLS 2:
+PLS 3 :
+Data/100_items/2KP100-TA-6
+PLS 2:
+PLS 3 :
+Data/100_items/2KP100-TA-0
+PLS 2:
+PLS 3 :
+Data/100_items/2KP100-TA-0
+PLS 2:
+PLS 3 :
+Data/100_items/2KP100-TA-1
+PLS 2:
