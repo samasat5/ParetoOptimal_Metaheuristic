@@ -6,7 +6,7 @@ from read_file import *
 from indicators import *
 import time
 
-
+np.random.seed(0)
 numInstance=0
 n=100
 p=2
