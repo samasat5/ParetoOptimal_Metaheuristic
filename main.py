@@ -269,42 +269,72 @@ for n in range(100, 800, 100):
 			f.write("PLS 3 :\n")
 		m=100
 		# using the previous p0 from PLS 2
-		def voisins_faisables_L1l2(xStart, weights, values, capacity, q_val=0.5, L=4): # worst and best L items 
-			performance_scores = (q_val*values[:,0] + (1 - q_val)*values[:,1]) / weights # performance ratio R(i)
-			order_idx_descending = np.argsort(-performance_scores)
-			in_idx = np.where(xStart == 1)[0]
-			out_idx = np.where(xStart == 0)[0]	
+		def _pareto_filter(points):
+			pts = sorted(points, key=lambda t: (t[0], t[1]), reverse=True)
+			out = []
+			for v1, v2, m in pts:
+				if any((u1 >= v1 and u2 >= v2) and (u1 > v1 or u2 > v2) for (u1,u2,_) in out):
+					continue
+				out = [(u1,u2,mm) for (u1,u2,mm) in out
+					if not ((v1 >= u1 and v2 >= u2) and (v1 > u1 or v2 > u2))]
+				out.append((v1, v2, m))
+			return out
 
-			ratio_in  = (q_val*values[in_idx,0]  + (1-q_val)*values[in_idx,1])  / weights[in_idx] # all items inside
-			ratio_out = (q_val*values[out_idx,0] + (1-q_val)*values[out_idx,1]) / weights[out_idx] # all items outside
-			L1 = in_idx[np.argsort(ratio_in)[:min(L, len(in_idx))]] # worst L items inside
-			L2 = out_idx[np.argsort(-ratio_out)[:min(L, len(out_idx))]] # best L items outside
+		def _pareto_dp_biobj(weights_sub, values_sub, W_sub): # Dynamic Programming
+			OPT = [ [(0,0,0)] ] + [[] for _ in range(W_sub)]
+			K = len(weights_sub)
+			for s in range(K):
+				ws = int(weights_sub[s])
+				v1s, v2s = int(values_sub[s,0]), int(values_sub[s,1])
+				for w in range(W_sub, ws-1, -1):
+					acc = OPT[w][:]
+					add = [(a1+v1s, a2+v2s, mask | (1<<s)) for (a1,a2,mask) in OPT[w-ws]]
+					if add:
+						OPT[w] = _pareto_filter(acc + add)
+			all_pts = [p for w in range(W_sub+1) for p in OPT[w]]
+			return _pareto_filter(all_pts)
 
+		def voisins_faisables_L1l2(xStart, weights, values, capacity, q_val=0.5, L=8):
+		
+			in_idx  = np.where(xStart == 1)[0]
+			out_idx = np.where(xStart == 0)[0]
+			ratio_in  = (q_val*values[in_idx,0]  + (1-q_val)*values[in_idx,1])  / weights[in_idx]
+			ratio_out = (q_val*values[out_idx,0] + (1-q_val)*values[out_idx,1]) / weights[out_idx]
+			L1 = in_idx[np.argsort(ratio_in)[:min(L, len(in_idx))]]
+			L2 = out_idx[np.argsort(-ratio_out)[:min(L, len(out_idx))]]
+
+			# freeze everything not in L1
 			n = len(weights)
-			S = L1 + L2
-			S_set = set(S)
+			fixed_mask = (xStart == 1) & (~np.isin(np.arange(n), L1))
+			fixed_weight = int(weights[fixed_mask].sum())
+			W_sub = int(capacity - fixed_weight)
 
-			F = [i for i in range(n) if (i not in S_set and xStart[i] == 1)]
-			W_base = int(np.sum(weights[F])) if F else 0
-			V_base = values[F].sum(axis=0) if F else np.zeros(2, dtype=int)
-			Wprime = capacity - W_base
-			neighbors = []
-			# Map S indices to positions in bit vector
-			k = len(S)
-			# all_bits = list(itertools.product([0,1], repeat=k))
-			# # for combo in sample(all_bits, min(20, len(all_bits))):
-			wt0 = int(np.dot(weights, xStart))
-			v0  = values.T @ xStart
 
-			for i in L1:
-				for j in L2:
-					new_wt = wt0 - weights[i] + weights[j]
-					if new_wt <= capacity:
-						x2 = xStart.copy()
-						x2[i] = 0
-						x2[j] = 1
-						v2 = v0 - values[i] + values[j]
-						yield x2, v2
+			# fixed value of the frozen part (remove L1 from current)
+			v_fixed = values.T @ xStart - values[L1].sum(axis=0)
+
+
+			S = np.concatenate((L1, L2))
+			if len(S) == 0:
+				return
+			ws = weights[S]
+			vs = values[S]
+
+			pareto_pts = _pareto_dp_biobj(ws, vs, W_sub)  # list of (v1,v2,mask)
+
+			#   efficient choices + frozen part :
+			base_x = xStart.copy()
+			base_x[L1] = 0  # removed candidates from the bag
+			for (pp1, pp2, mask) in pareto_pts:
+				if mask == 0:
+					continue  # would reproduce base_x
+				x2 = base_x.copy()
+				for t in range(len(S)):
+					if (mask >> t) & 1:
+						x2[S[t]] = 1
+				if int(weights @ x2) <= capacity:
+					v2 = v_fixed + np.array([pp1, pp2], dtype=int)
+					yield x2, v2
 
 
 						
@@ -313,7 +343,7 @@ for n in range(100, 800, 100):
 		XE = [ [x.copy(), v.copy()] for (x, v) in p0 ]
 		P  = [ [x.copy(), v.copy()] for (x, v) in p0 ]
 		q_val = 0.6
-		L = 4
+		L = 12
 		while len(P) > 0:	
 			pa = []
 			for solution in P:
