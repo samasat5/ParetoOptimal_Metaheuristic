@@ -266,8 +266,11 @@ for n in range(100, 800, 100):
 			order_idx_descending = np.argsort(-performance_scores)
 			in_idx = np.where(xStart == 1)[0]
 			out_idx = np.where(xStart == 0)[0]	
-			L1 = [i for i in in_idx if i in order_idx_descending[-(L):]]  # worst candidates to be removed
-			L2 = [j for j in out_idx if j in order_idx_descending[:L]]  # best candidates to be added
+
+			ratio_in  = (q_val*values[in_idx,0]  + (1-q_val)*values[in_idx,1])  / weights[in_idx] # all items inside
+			ratio_out = (q_val*values[out_idx,0] + (1-q_val)*values[out_idx,1]) / weights[out_idx] # all items outside
+			L1 = in_idx[np.argsort(ratio_in)[:min(L, len(in_idx))]] # worst L items inside
+			L2 = out_idx[np.argsort(-ratio_out)[:min(L, len(out_idx))]] # best L items outside
 
 			n = len(weights)
 			S = L1 + L2
@@ -305,7 +308,7 @@ for n in range(100, 800, 100):
 		XE = [ [x.copy(), v.copy()] for (x, v) in p0 ]
 		P  = [ [x.copy(), v.copy()] for (x, v) in p0 ]
 		q_val = 0.6
-		L = 4
+		L = 22
 		while len(P) > 0:	
 			pa = []
 			for solution in P:
