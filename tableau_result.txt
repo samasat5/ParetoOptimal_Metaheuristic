@@ -1,0 +1,9 @@
+Data/100_items/2KP100-TA-0
+PLS 1:
+Proportion =0.072 DM =2.8943754320899133 Archive size (XE):996 Time taken (PLS 1):139.37390446662903seconds
+PLS 2:
+Proportion =0.072 DM =2.8943754320899133 Archive size (XE):22 Time taken (PLS 2):6.876322984695435seconds
+PLS 3 :
+Proportion =0.072 DM =2.889088861986637 Archive size (XE):1000 Time taken (PLS 3):0.6581029891967773seconds
+Data/100_items/2KP100-TA-1
+PLS 1:
