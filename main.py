@@ -12,13 +12,13 @@ n=100
 p=2
 
 for n in range(100, 800, 100):
-	for numInstance in range(0, 10):
+	for numInstance in range(5, 10):
 		w=np.zeros(n,dtype=int)
 		v=np.zeros((n,p),dtype=int)
 		filename = "Data/"+str(n)+"_items/2KP"+str(n)+"-TA-"+str(numInstance)+".dat"
 		with open("tableau_result.txt", "a") as f:
 				f.write(filename[:-4]+"\n")
-		
+
 		capacity, weights, values =readFile(filename,w,v)
 
 		#Lecture des point non-dominées
@@ -87,6 +87,7 @@ for n in range(100, 800, 100):
 		##################################################
 
 		# # initial population based on performance ratio:
+		"""
 		print("PLS 1:")
 		with open("tableau_result.txt", "a") as f:
 			f.write("PLS 1:"+"\n")
@@ -147,6 +148,7 @@ for n in range(100, 800, 100):
 			pa = []	
 		time_end = time.time() 
 		"""              
+		"""
 		plt.figure()
 		plt.grid()
 		plt.scatter(YN[:,0], YN[:,1], color='blue', s=10, label='True Pareto (YN)')
@@ -154,6 +156,8 @@ for n in range(100, 800, 100):
 			plt.scatter(vsol[0], vsol[1], color='red', s=12)
 		plt.legend()
 		plt.show()
+  
+		"""
 		"""
 		print("Proportion =", proportion(YN, XE))
 		print("DM =", DM(YN, XE, p))
@@ -164,6 +168,7 @@ for n in range(100, 800, 100):
 			f.write("DM ="+ str(DM(YN, XE, p)) + " ")
 			f.write("Archive size (XE):" + str(len(XE)) + " ")
 			f.write("Time taken (PLS 1):"+ str(time_end - time_start)+ "seconds\n")
+		"""
 		##################################################
 		# PLS 2 :
 		##################################################
@@ -226,7 +231,8 @@ for n in range(100, 800, 100):
 			P = pa
 			pa = []	
 		time_end = time.time()
-		"""          
+		       
+		"""
 		plt.figure()
 		plt.grid()
 		plt.scatter(YN[:,0], YN[:,1], color='blue', s=10, label='True Pareto (YN)')
@@ -235,17 +241,19 @@ for n in range(100, 800, 100):
 		plt.legend()
 		plt.show()
 		"""
+		
 		print("Proportion =", proportion(YN, XE))
 		print("DM =", DM(YN, XE, p))
 		print("Archive size (XE):", len(XE))
 		print("Time taken (PLS 2):", time_end - time_start, "seconds")
+		"""
 		with open("tableau_result.txt", "a") as f:
 			f.write("Proportion ="+ str(proportion(YN, XE)) +" ")
 			f.write("DM ="+ str(DM(YN, XE, p)) + " ")
 			f.write("Archive size (XE):" + str(len(XE)) + " ")
 			f.write("Time taken (PLS 2):"+ str(time_end - time_start)+ "seconds\n")
-
-
+		"""
+		
 		##################################################
 		# PLS 3 :
 		##################################################
@@ -296,8 +304,13 @@ for n in range(100, 800, 100):
 						x_new = xStart.copy()
 						x_new[list(R)] = 0
 						x_new[list(A)] = 1
-						neighbors.append(x_new)
-			return neighbors
+						print("V_base : ", V_base.shape)
+						print("values[A] : ", values[A].shape)
+						print("values[R] : ", values[R].shape)
+
+						v_new = V_base + values[A].sum(axis=0) -values[R].sum(axis=0)
+						yield x_new, v_new
+
 
 						
 						
@@ -311,6 +324,7 @@ for n in range(100, 800, 100):
 			for solution in P:
 				x1, v1 = solution
 				for solution_prime in voisins_faisables_L1l2(x1, weights, values, capacity, q_val, L)	:
+					print("PLS3:", solution_prime)
 					x2, v2 = solution_prime 
 					if not ((v1[0] >= v2[0] and v1[1] >= v2[1]) and (v1[0] > v2[0] or v1[1] > v2[1])): 
 						dominates =  firstObj_miseAJour(XE, [x2, v2])
@@ -333,12 +347,13 @@ for n in range(100, 800, 100):
 		print("DM =", DM(YN, XE, p))
 		print("Archive size (XE):", len(XE))
 		print("Time taken (PLS 3):", time_end - time_start, "seconds")
+		"""
 		with open("tableau_result.txt", "a") as f:
 			f.write("Proportion ="+ str(proportion(YN, XE)) +" ")
 			f.write("DM ="+ str(DM(YN, XE, p)) + " ")
 			f.write("Archive size (XE):" + str(len(XE)) + " ")
 			f.write("Time taken (PLS 3):"+ str(time_end - time_start)+ "seconds\n")
-
+		"""
 
 
 
