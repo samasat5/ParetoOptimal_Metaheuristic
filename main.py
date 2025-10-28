@@ -343,7 +343,7 @@ for n in range(100, 800, 100):
 		XE = [ [x.copy(), v.copy()] for (x, v) in p0 ]
 		P  = [ [x.copy(), v.copy()] for (x, v) in p0 ]
 		q_val = 0.6
-		L = 4
+		L = 12
 		while len(P) > 0:	
 			pa = []
 			for solution in P:
