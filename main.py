@@ -288,32 +288,23 @@ for n in range(100, 800, 100):
 			W_base = int(np.sum(weights[F])) if F else 0
 			V_base = values[F].sum(axis=0) if F else np.zeros(2, dtype=int)
 			Wprime = capacity - W_base
-			
 			neighbors = []
+			# Map S indices to positions in bit vector
+			k = len(S)
+			# all_bits = list(itertools.product([0,1], repeat=k))
+			# # for combo in sample(all_bits, min(20, len(all_bits))):
+			wt0 = int(np.dot(weights, xStart))
+			v0  = values.T @ xStart
 
-			# Génération de tous les sous-ensembles possibles
-		
-
-			# Pour chaque combinaison de retraits (R) et d’ajouts (A)
-			for R in powerset(L1):
-				R = list(R)
-				weight_removed = np.sum(weights[list(R)]) if R else 0
-				for A in powerset(L2):
-					A = list(A)
-					weight_added = np.sum(weights[list(A)]) if A else 0
-					total_weight = W_base - weight_removed + weight_added
-
-					# Vérifie faisabilité
-					if total_weight <= capacity and (R or A):  # au moins un changement
-						# Nouvelle solution
-						x_new = xStart.copy()
-						x_new[list(R)] = 0
-						x_new[list(A)] = 1
-						add_val = values[A].sum(axis=0) if A else np.zeros(2, dtype=int)
-						rem_val = values[R].sum(axis=0) if R else np.zeros(2, dtype=int)
-
-						v_new = V_base + add_val -rem_val
-						yield x_new, v_new
+			for i in L1:
+				for j in L2:
+					new_wt = wt0 - weights[i] + weights[j]
+					if new_wt <= capacity:
+						x2 = xStart.copy()
+						x2[i] = 0
+						x2[j] = 1
+						v2 = v0 - values[i] + values[j]
+						yield x2, v2
 
 
 						
