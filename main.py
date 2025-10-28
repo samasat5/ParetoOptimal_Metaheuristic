@@ -245,8 +245,8 @@ def voisins_faisables_L1l2(xStart, weights, values, capacity, q_val=0.5, L=4): #
 	order_idx_descending = np.argsort(-performance_scores)
 	in_idx = np.where(xStart == 1)[0]
 	out_idx = np.where(xStart == 0)[0]	
-	L1 = list(in_idx[:min(L, len(in_idx))])  # worst candidates (within 1) to be removed
-	L2 = list(out_idx[:min(L, len(out_idx))]) # best candidates (within 0) to be added
+	L2 = list(order_idx_descending[:L])                  # best according to R(i)
+	L1 = list(order_idx_descending[::-1][:L])            # worst according to R(i)
 
 	n = len(weights)
 	S = L1 + L2
