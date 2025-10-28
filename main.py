@@ -296,8 +296,10 @@ for n in range(100, 800, 100):
 
 			# Pour chaque combinaison de retraits (R) et d’ajouts (A)
 			for R in powerset(L1):
+				R = list(R)
 				weight_removed = np.sum(weights[list(R)]) if R else 0
 				for A in powerset(L2):
+					A = list(A)
 					weight_added = np.sum(weights[list(A)]) if A else 0
 					total_weight = W_base - weight_removed + weight_added
 
@@ -307,11 +309,10 @@ for n in range(100, 800, 100):
 						x_new = xStart.copy()
 						x_new[list(R)] = 0
 						x_new[list(A)] = 1
-						print("V_base : ", V_base.shape)
-						print("values[A] : ", values[A].shape)
-						print("values[R] : ", values[R].shape)
+						add_val = values[A].sum(axis=0) if A else np.zeros(2, dtype=int)
+						rem_val = values[R].sum(axis=0) if R else np.zeros(2, dtype=int)
 
-						v_new = V_base + values[A].sum(axis=0) -values[R].sum(axis=0)
+						v_new = V_base + add_val -rem_val
 						yield x_new, v_new
 
 
@@ -321,13 +322,13 @@ for n in range(100, 800, 100):
 		XE = [ [x.copy(), v.copy()] for (x, v) in p0 ]
 		P  = [ [x.copy(), v.copy()] for (x, v) in p0 ]
 		q_val = 0.6
-		L = 22
+		L = 4
 		while len(P) > 0:	
 			pa = []
 			for solution in P:
 				x1, v1 = solution
 				for solution_prime in voisins_faisables_L1l2(x1, weights, values, capacity, q_val, L)	:
-					print("PLS3:", solution_prime)
+
 					x2, v2 = solution_prime 
 					if not ((v1[0] >= v2[0] and v1[1] >= v2[1]) and (v1[0] > v2[0] or v1[1] > v2[1])): 
 						dominates =  firstObj_miseAJour(XE, [x2, v2])
