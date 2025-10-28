@@ -6,7 +6,7 @@ from read_file import *
 from indicators import *
 import time
 
-
+np.random.seed(0)
 numInstance=0
 n=100
 p=2
@@ -308,7 +308,7 @@ for n in range(100, 800, 100):
 		XE = [ [x.copy(), v.copy()] for (x, v) in p0 ]
 		P  = [ [x.copy(), v.copy()] for (x, v) in p0 ]
 		q_val = 0.6
-		L = 22
+		L = 27
 		while len(P) > 0:	
 			pa = []
 			for solution in P:
