@@ -87,7 +87,7 @@ for n in range(100, 800, 100):
 		##################################################
 
 		# # initial population based on performance ratio:
-		"""
+		
 		print("PLS 1:")
 		with open("tableau_result.txt", "a") as f:
 			f.write("PLS 1:"+"\n")
@@ -147,7 +147,7 @@ for n in range(100, 800, 100):
 			P = pa
 			pa = []	
 		time_end = time.time() 
-		"""              
+		            
 		"""
 		plt.figure()
 		plt.grid()
@@ -158,7 +158,7 @@ for n in range(100, 800, 100):
 		plt.show()
   
 		"""
-		"""
+		
 		print("Proportion =", proportion(YN, XE))
 		print("DM =", DM(YN, XE, p))
 		print("Archive size (XE):", len(XE))
@@ -168,7 +168,7 @@ for n in range(100, 800, 100):
 			f.write("DM ="+ str(DM(YN, XE, p)) + " ")
 			f.write("Archive size (XE):" + str(len(XE)) + " ")
 			f.write("Time taken (PLS 1):"+ str(time_end - time_start)+ "seconds\n")
-		"""
+		
 		##################################################
 		# PLS 2 :
 		##################################################
@@ -246,13 +246,13 @@ for n in range(100, 800, 100):
 		print("DM =", DM(YN, XE, p))
 		print("Archive size (XE):", len(XE))
 		print("Time taken (PLS 2):", time_end - time_start, "seconds")
-		"""
+		
 		with open("tableau_result.txt", "a") as f:
 			f.write("Proportion ="+ str(proportion(YN, XE)) +" ")
 			f.write("DM ="+ str(DM(YN, XE, p)) + " ")
 			f.write("Archive size (XE):" + str(len(XE)) + " ")
 			f.write("Time taken (PLS 2):"+ str(time_end - time_start)+ "seconds\n")
-		"""
+		
 		
 		##################################################
 		# PLS 3 :
@@ -342,13 +342,13 @@ for n in range(100, 800, 100):
 		print("DM =", DM(YN, XE, p))
 		print("Archive size (XE):", len(XE))
 		print("Time taken (PLS 3):", time_end - time_start, "seconds")
-		"""
+		
 		with open("tableau_result.txt", "a") as f:
 			f.write("Proportion ="+ str(proportion(YN, XE)) +" ")
 			f.write("DM ="+ str(DM(YN, XE, p)) + " ")
 			f.write("Archive size (XE):" + str(len(XE)) + " ")
 			f.write("Time taken (PLS 3):"+ str(time_end - time_start)+ "seconds\n")
-		"""
+		
 
 
 
